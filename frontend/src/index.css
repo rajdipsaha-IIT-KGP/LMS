@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss";
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+@theme {
+  /* Font Sizes */
+  --text-course-details-heading-small: 26px;
+  --text-course-details-heading-large: 36px;
+  --text-home-heading-small: 28px;
+  --text-home-heading-large: 48px;
+  --text-default: 15px;
+
+  /* Line Heights */
+  --leading-course-details-heading-small: 36px;
+  --leading-course-details-heading-large: 44px;
+  --leading-home-heading-small: 34px;
+  --leading-home-heading-large: 56px;
+  --leading-default: 21px;
+
+  /* Custom Height */
+  --spacing-section-height: 500px;
+
+  /* Max Width */
+  --max-width-course-card: 424px;
+
+  /* Shadow */
+  --shadow-custom-card: 0px 4px 15px 2px rgba(0, 0, 0, 0.1);
+}
+@keyframes bounceLine {
+  0% {
+    left: 0%;
+  }
+
+  50% {
+    left: calc(100% - 96px);
+  }
+
+  100% {
+    left: 0%;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
