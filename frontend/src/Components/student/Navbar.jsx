@@ -5,9 +5,9 @@ import { useClerk, UserButton, useUser } from "@clerk/react";
 import { AppContext } from "../../Context/AppContext";
 
 const Navbar = () => {
-  const navigate = useContext(AppContext)
+  const {navigate,isEducator} = useContext(AppContext)
   const location = useLocation();
-
+  
   const isCourseListsPage =
     location.pathname.includes("/course-list");
 
@@ -28,9 +28,9 @@ const Navbar = () => {
       {/* Logo */}
       <Link to="/">
         <img onClick={()=>navigate('/')}
-          src={assets.logo}
+          src={assets.logo_dark}
           alt="logo"
-          className="w-28 sm:w-32 lg:w-36 brightness-110"
+          className="w-30 sm:w-20   lg:w-30 brightness-110"
         />
       </Link>
 
@@ -38,8 +38,10 @@ const Navbar = () => {
       <div className="hidden md:flex items-center gap-8">
         {user && (
           <div className="flex items-center gap-4 text-gray-300">
-            <button className="font-medium hover:text-green-400 transition duration-300 cursor-pointer">
-              Become Educator
+            <button className="font-medium hover:text-green-400 transition duration-300 cursor-pointer" onClick={()=>{
+              navigate('/educator')
+            }}>
+              {!isEducator ? 'Become Educator':'Educator Dashboard'} 
             </button>
 
             <span className="text-gray-600">|</span>
@@ -82,8 +84,8 @@ const Navbar = () => {
       <div className="md:hidden flex items-center gap-3 text-sm">
         {user && (
           <div className="flex items-center gap-2 text-gray-300">
-            <button className="hover:text-green-400 transition">
-              Become Educator
+            <button className="hover:text-green-400 transition" onClick={()=>navigate('/educator ')}>
+               {!isEducator ? 'Become Educator':'Educator Dashboard'} 
             </button>
 
             <span className="text-gray-600">|</span>

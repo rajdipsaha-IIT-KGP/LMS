@@ -47,22 +47,32 @@ const CoursesSection = () => {
           <Link
             to={'/course-list'}
             onClick={() => scrollTo(0, 0)}
-            className="
-              inline-flex
-              items-center
-              justify-center
-              px-8
-              py-4
-              rounded-full
-              bg-green-500
-              text-black
-              font-semibold
-              hover:bg-green-400
-              hover:scale-105
-              transition-all
-              duration-300
-              shadow-[0_0_25px_rgba(34,197,94,0.25)]
-            "
+           className="
+inline-flex
+items-center
+justify-center
+px-8
+py-4
+
+bg-white/5
+backdrop-blur-md
+border
+border-green-400
+bg-gradient-to-r
+from-green-400
+to-yellow-400
+bg-clip-text
+text-transparent
+font-semibold
+text-lg
+shadow-[0_8px_32px_rgba(0,0,0,0.35)]
+hover:border-green-500
+hover:bg-green-500/10
+hover:text-green-400
+hover:scale-105
+transition-all
+duration-300
+"
           >
             Show All Courses
           </Link>

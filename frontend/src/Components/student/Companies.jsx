@@ -118,6 +118,18 @@ const Companies = () => {
               transition-all
             "
           />
+             <img
+            src={assets.google_logo}
+            alt="google"
+            className="
+              h-12
+              md:h-16
+              w-auto
+              animate-[float_4.2s_ease-in-out_infinite]
+              hover:scale-110
+              transition-all
+            "
+          />
         </div>
 
       </div>

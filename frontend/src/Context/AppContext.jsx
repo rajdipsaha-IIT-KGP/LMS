@@ -9,6 +9,7 @@ export const AppContextProvider = (props)=>{
 const currency = import.meta.env.VITE_CURRENCY
 const navigate = useNavigate();
 const [allcourses,setAllcourses] = useState([])
+const [isEducator,setIsEducator] = useState(true)
 
 //fetch all courses
 
@@ -33,7 +34,7 @@ return totalRating / course.courseRatings.length;
  fetchAllCourses()
   },[])
     const value = {
-         currency , allcourses , navigate ,calculateRating
+         currency , allcourses , navigate ,calculateRating,isEducator,setIsEducator
     }
     return (
         <AppContext.Provider value={value}>

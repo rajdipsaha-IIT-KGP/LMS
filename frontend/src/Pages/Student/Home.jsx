@@ -2,6 +2,9 @@ import React from 'react';
 import Hero from '../../Components/student/Hero';
 import Companies from '../../Components/student/Companies';
 import CoursesSection from '../../Components/student/CoursesSection';
+import Testimonials from '../../Components/student/Testimonials';
+import CallToAction from '../../Components/student/CallToAction';
+import Footer from '../../Components/student/Footers';
 
 const Home = () => { 
   return ( 
@@ -23,6 +26,9 @@ const Home = () => {
   <div className="h-px w-[95%] bg-gradient-to-r from-transparent via-green-400/70 to-transparent shadow-[0_0_12px_rgba(34,197,94,0.3)]"></div>
 </div>
       <CoursesSection/>
+      <Testimonials/>
+      <CallToAction/>
+      <Footer/>
     </main> 
   );
 };
