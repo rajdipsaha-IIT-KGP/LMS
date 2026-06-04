@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
-
+import humanizeDuration from 'humanize-duration'
 export const AppContext = createContext()
 
 export const AppContextProvider = (props)=>{
@@ -19,22 +19,61 @@ const fetchAllCourses = async()=>{
 
 // Function calculating avg rating of courses
 
-const calculateRating = (course)=>{
- if(course.courseRatings.length === 0)
-    return 0;
-let totalRating = 0;
-course.courseRatings.forEach(rating => {
-    totalRating += rating.rating
-})
-return totalRating / course.courseRatings.length;
+const calculateRating = (course) => {
+  if (!course || !course.courseRatings) return 0;
+
+  if (course.courseRatings.length === 0) return 0;
+
+  let totalRating = 0;
+
+  course.courseRatings.forEach((rating) => {
+    totalRating += rating.rating;
+  });
+
+  return totalRating / course.courseRatings.length;
+};
+
+// Calculate Course Chapter Time
+
+const calculateChapterTime = (chapter) => {
+    let time = 0;
+    chapter.chapterContent.map((lecture)=>(
+      time += lecture.lectureDuration
+    ))
+    return humanizeDuration(time*60*1000,{units:["h","m"]} )
 }
 
+//Function to calculate Course Duration
+
+const calculateCourseDuration = (course) => {
+    let time = 0;
+    course.courseContent.map((chapter)=>(
+        chapter.chapterContent.map((lecture)=>
+        time += lecture.lectureDuration
+        ) 
+    ))
+    return humanizeDuration(time*60*1000,{units:["h","m"]} )
+}
+
+//Function to calculate total number of lecture in Course 
+
+const calculateNoOfLectures = (course) => {
+  if (!course?.courseContent) return 0;
+
+  let totalLectures = 0;
+
+  course.courseContent.forEach(chapter => {
+    totalLectures += chapter.chapterContent?.length || 0;
+  });
+
+  return totalLectures;
+};
 
   useEffect(()=>{
  fetchAllCourses()
   },[])
     const value = {
-         currency , allcourses , navigate ,calculateRating,isEducator,setIsEducator
+         currency , allcourses , navigate ,calculateRating,isEducator,setIsEducator,calculateChapterTime,calculateCourseDuration,calculateNoOfLectures
     }
     return (
         <AppContext.Provider value={value}>

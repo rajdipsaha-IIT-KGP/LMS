@@ -3,7 +3,7 @@ import { assets } from '../../assets/assets'
 
 const Footer = () => {
   return (
-    <footer className="relative w-full bg-black overflow-hidden">
+    <footer className="relative w-full bg-black overflow-hidden pt-6">
 
       {/* Top Divider */}
       <div className="w-full flex justify-center">
