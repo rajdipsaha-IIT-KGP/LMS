@@ -10,6 +10,7 @@ const currency = import.meta.env.VITE_CURRENCY
 const navigate = useNavigate();
 const [allcourses,setAllcourses] = useState([])
 const [isEducator,setIsEducator] = useState(true)
+const [enrolledCourses,setEnrolledCourses] = useState([])
 
 //fetch all courses
 
@@ -69,11 +70,18 @@ const calculateNoOfLectures = (course) => {
   return totalLectures;
 };
 
+//Fetch user enrolled courses
+
+const fetchUserEnrolledCourses = async()=>{
+  setEnrolledCourses(dummyCourses)
+}
+
   useEffect(()=>{
  fetchAllCourses()
+ fetchUserEnrolledCourses()
   },[])
     const value = {
-         currency , allcourses , navigate ,calculateRating,isEducator,setIsEducator,calculateChapterTime,calculateCourseDuration,calculateNoOfLectures
+         currency , allcourses , navigate ,calculateRating,isEducator,setIsEducator,calculateChapterTime,calculateCourseDuration,calculateNoOfLectures,enrolledCourses,setEnrolledCourses,fetchUserEnrolledCourses
     }
     return (
         <AppContext.Provider value={value}>

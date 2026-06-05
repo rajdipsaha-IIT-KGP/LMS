@@ -309,7 +309,7 @@ const CourseDetails = () => {
             autoplay: 0,
           },
         }}
-        iframeClassName="w-full h-full"
+        iframeClassName="w-full aspect-video"
       />
     ) : (
       <img
