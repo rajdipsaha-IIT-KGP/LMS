@@ -1,0 +1,30 @@
+import express from 'express'
+import cors from 'cors'
+import 'dotenv/config'
+import connectDB from './configs/mongodb.js'
+import { clerkWebhooks } from './controllers/webhooks.js'
+
+
+//Intialize express
+const app = express()
+
+
+// Connect to Database
+await connectDB()
+
+//Middlewares
+app.use(cors())
+
+//Routes
+app.get('/',(req,res)=>{
+  res.send("API working")
+})
+app.post('/clerk',express.json(),clerkWebhooks)
+
+//PORT
+
+const PORT = 8000;
+
+app.listen(PORT, () => {
+  console.log("Server running on", PORT);
+});

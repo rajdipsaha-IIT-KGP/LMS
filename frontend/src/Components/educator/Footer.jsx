@@ -43,7 +43,7 @@ const Footer = () => {
           <div className="hidden md:block h-8 w-px bg-zinc-700"></div>
 
           <p className="text-zinc-500 text-xs md:text-sm text-center">
-            Copyright © 2025. All Rights Reserved.
+            Copyright © 2026. All Rights Reserved.
           </p>
 
         </div>
