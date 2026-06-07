@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from 'humanize-duration'
+import {useAuth,useUser} from '@clerk/react'
 export const AppContext = createContext()
 
 export const AppContextProvider = (props)=>{
@@ -11,6 +12,9 @@ const navigate = useNavigate();
 const [allcourses,setAllcourses] = useState([])
 const [isEducator,setIsEducator] = useState(true)
 const [enrolledCourses,setEnrolledCourses] = useState([])
+
+const {getToken} = useAuth()
+const {user} = useUser()
 
 //fetch all courses
 
@@ -80,6 +84,29 @@ const fetchUserEnrolledCourses = async()=>{
  fetchAllCourses()
  fetchUserEnrolledCourses()
   },[])
+
+const logToken = async()=>{
+  const token = await getToken()
+  console.log(await getToken())
+   const res = await fetch(
+    "http://localhost:8000/api/educator/update-role",
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+  console.log(data);
+}
+
+
+  useEffect(()=>{
+     if(user)
+      logToken()
+  },[user])
     const value = {
          currency , allcourses , navigate ,calculateRating,isEducator,setIsEducator,calculateChapterTime,calculateCourseDuration,calculateNoOfLectures,enrolledCourses,setEnrolledCourses,fetchUserEnrolledCourses
     }
