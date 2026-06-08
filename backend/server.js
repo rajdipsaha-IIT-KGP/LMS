@@ -5,6 +5,7 @@ import connectDB from './configs/mongodb.js'
 import { clerkWebhooks } from './controllers/webhooks.js'
 import educatorRouter from './routes/educatorRoutes.js'
 import { clerkMiddleware } from '@clerk/express'
+import connectCloudinary from './configs/cloudinary.js'
 
 
 //Intialize express
@@ -13,6 +14,7 @@ const app = express()
 
 // Connect to Database
 await connectDB()
+await connectCloudinary()
 
 //Middlewares
 app.use(cors())
