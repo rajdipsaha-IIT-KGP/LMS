@@ -1,12 +1,15 @@
 import { clerkClient } from "@clerk/express";
 import Course from "../models/Course.js";
 import {v2 as cloudinary} from 'cloudinary'
+import { Purchase } from "../models/purchase.js";
+import User from "../models/User.js";
 
 // For becoming educator function
 export const updateRoleEducator = async (req, res) => {
   try {
     const { userId } = await req.auth();
 
+    
    
     await clerkClient.users.updateUserMetadata(userId, {
       publicMetadata: {
@@ -19,7 +22,7 @@ export const updateRoleEducator = async (req, res) => {
       message: "You can publish a course now",
     });
   } catch (error) {
-    console.log(error);
+   
     res.status(400).json({
       success: false,
       message: error.message,
@@ -88,5 +91,95 @@ export const getEducatorCourses = async(req,res)=>{
   }
   catch(error){
      return res.json(error.message)
+  }
+}
+//Get educator dashboard data
+
+export const educatorDashboardData = async(req,res)=>{
+   try{
+   const { userId: educator } = await req.auth();
+   const courses = await Course.find({educator})
+
+    let totalCourses = courses.length;
+    let totalEarnings = 0;
+
+    const courseIds = courses.map((course)=>{
+      return course._id
+    })
+
+    const purchases = await Purchase.find({
+      courseId:{$in:courseIds},
+      status:'completed'
+    })
+
+    totalEarnings = purchases.reduce((sum,purchase)=>
+      sum + purchase.amount,0
+    )
+    //Collect unique enroll students id 
+    let enrolledStudentsData = []
+    for(let course of courses){
+      const students = await User.find({
+        _id:{$in:course.enrolledStudents}
+      },'name imageUrl')
+      students.forEach(student=>{
+         enrolledStudentsData.push({
+          courseTitle:course.courseTitle,
+          student
+         })
+      })
+    }
+    res.status(200).json({
+      dashboardData:{
+        totalEarnings,
+        enrolledStudentsData,
+        totalCourses
+      }
+    })
+   }
+   catch(err){
+      res.status(500).json({
+        message:err.message
+      })
+   }
+   
+}
+
+// Get Enrolled students Data With Purchase Data
+
+export const getEnrolledStudentsData = async (req,res) => {
+  try {
+
+    const { userId: educator } = await req.auth();
+    let courses = await Course.find({educator});
+
+    const courseIds = courses.map((course)=>{
+      return course._id
+    })
+
+
+     const purchases = await Purchase.find({
+      courseId:{$in:courseIds},
+      status:'completed'
+    }).populate('userId','name imageUrl').populate('courseId','courseTitle')
+
+    const enrolledStudents = purchases.map(purchase=>({
+      student:purchase.userId,
+      courseTitle:purchase.courseId.courseTitle,
+      purchaseDate:purchase.createdAt
+    }))
+
+
+    res.status(201).json({
+      success:'true',
+      enrolledStudents
+    })
+
+
+
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    })
   }
 }
