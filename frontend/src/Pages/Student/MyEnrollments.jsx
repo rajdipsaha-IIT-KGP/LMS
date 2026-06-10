@@ -1,33 +1,50 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../Context/AppContext'
 import { Line } from 'rc-progress'
 import Footer from '../../Components/student/Footers'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const MyEnrollments = () => {
 
   const {
     enrolledCourses,
     calculateCourseDuration,
-    navigate
+    navigate,userData,fetchUserEnrolledCourses,getToken,backendUrl,calculateNoOfLectures
   } = useContext(AppContext)
 
-  const [progressArray] = useState([
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 1, totalLectures: 4 },
-    { lectureCompleted: 3, totalLectures: 4 },
-    { lectureCompleted: 4, totalLectures: 4 },
-    { lectureCompleted: 0, totalLectures: 4 },
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 2, totalLectures: 10 },
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 2, totalLectures: 4 }
-  ])
+  const [progressArray,setProgressArray] = useState([])
 
+
+  const getCourseProgress = async () => {
+    try {
+      const token = await getToken();
+      const tempProgressArray = await Promise.all(
+        enrolledCourses.map(async (course) => {
+          const {data} = await axios.post(backendUrl + '/api/user/get-course-progress',
+            {courseId:course._id},{headers:{Authorization:`Bearer ${token}`}}
+          )
+           let totalLectures = calculateNoOfLectures(course)
+      const lectureCompleted = data.progressData ? data.progressData.lectureCompleted.length : 0
+      return {totalLectures,lectureCompleted}
+        })
+        
+      )
+     setProgressArray(tempProgressArray)
+    } catch (error) {
+      return toast.error(error.message)
+    }
+  }
+
+  useEffect(()=>{
+    if(userData)
+      fetchUserEnrolledCourses()
+  },[userData])
+
+  useEffect(()=>{
+    if(enrolledCourses.length > 0)
+      getCourseProgress()
+  },[enrolledCourses])
   return (
     <>
     <section className="min-h-screen bg-black text-white pt-24 px-4 md:px-10 lg:px-20 overflow-hidden">

@@ -6,6 +6,9 @@ import humanizeDuration from 'humanize-duration'
 import YouTube from 'react-youtube'
 import Footer from '../../Components/student/Footers'
 import Rating from '../../Components/student/Rating'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import Loading from '../../Components/student/Loading'
 
 const Player = () => {
   const { courseId } = useParams()
@@ -14,6 +17,8 @@ const Player = () => {
   const [courseData, setCourseData] = useState(null)
   const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false)
   const [playerData, setPlayerData] = useState(null)
+  const [progressData,setProgressData] = useState(null)
+  const [initialRating,setInitialRating] = useState(0)
 
   const {
     allcourses,
@@ -22,24 +27,97 @@ const Player = () => {
     calculateCourseDuration,
     calculateNoOfLectures,
     currency,
-    enrolledCourses,
+    enrolledCourses,backendUrl,userData,getToken,fetchUserEnrolledCourses
   } = useContext(AppContext)
 
   const getCourseData = async () => {
     enrolledCourses.map((course) => {
       if (course._id === courseId) {
         setCourseData(course)
+        course.courseRatings?.map((item)=>{
+          if(item.userId === userData._id)
+           setInitialRating(item.rating)
+        })
       }
     })
   }
 
   useEffect(() => {
-    if (allcourses.length > 0) {
+    if (enrolledCourses.length > 0) {
       getCourseData()
     }
   }, [enrolledCourses])
  console.log(playerData)
-  return (
+
+
+const getYoutubeVideoId = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+
+    if (parsedUrl.hostname.includes("youtu.be")) {
+      return parsedUrl.pathname.slice(1);
+    }
+    
+
+    return parsedUrl.searchParams.get("v");
+  } catch {
+    return null;
+  }
+};
+
+ const markLectureAsCompleted = async (lectureId) => {
+  try {
+    const token = await getToken()
+    const {data} = await axios.post(backendUrl + '/api/user/update-course-progress',{courseId,lectureId},{headers:{Authorization:`Bearer ${token}`}})
+    if(data.success){
+      toast.success(data.message)
+      getCourseProgress()
+    }
+    else{
+      toast.error(data.message)
+    }
+  } catch (error) {
+    toast.error(error.message)
+  }
+ }
+
+ const getCourseProgress = async () => {
+  try {
+    const token = await getToken()
+    const {data} = await axios.post(backendUrl + '/api/user/get-course-progress',
+      {courseId},{headers:{Authorization:`Bearer ${token}`}}
+    )
+    if(data.success)
+      setProgressData(data.progressData)
+    else toast.error(data.message)
+  } catch (error) {
+    toast.error(error.message)
+  }
+ }
+
+
+ const handleRate = async (rating) => {
+  try {
+    const token = await getToken()
+    const {data} = await axios.post(backendUrl + '/api/user/add-rating',
+      {courseId,rating},{headers:{Authorization:`Bearer ${token}`}}
+    )
+    if(data.success){
+       setProgressData(data.progressData)
+       fetchUserEnrolledCourses()
+       toast.success(data.message)
+    }
+      
+    else toast.error(data.message)
+  } catch (error) {
+    toast.error(error.message)
+  }
+ }
+
+ useEffect(()=>{
+getCourseProgress()
+ },[])
+  return courseData ? (
     <>
       <div className="min-h-screen bg-black text-white overflow-hidden relative">
 
@@ -154,10 +232,14 @@ const Player = () => {
                             onClick={() => {
                               console.log("Lecture clicked")
                              console.log(lecture)
+                              console.log("URL:", lecture.lectureUrl);
+                              console.log(
+           "Video ID:",
+    getYoutubeVideoId(lecture.lectureUrl)
+  );
                               if (lecture.lectureUrl) {
                                 setPlayerData({
-                                  ...lecture,chapter : index + 1,lecture:i+1,videoId:lecture.lectureUrl.split('/').pop()
-
+                                  ...lecture,chapter : index + 1,lecture:i+1,videoId:getYoutubeVideoId(lecture.lectureUrl)
                                 })
                               } else {
                                 setPlayerData(null)
@@ -198,9 +280,16 @@ const Player = () => {
                                 <span
                                   onClick={() => {
                                     console.log("Lecture clicked")
+                             console.log(lecture)
+                              console.log("URL:", lecture.lectureUrl);
+                              console.log(
+           "Video ID:",
+    getYoutubeVideoId(lecture.lectureUrl)
+  );
+                                    console.log("Lecture clicked")
                                    console.log(lecture)
                                     setPlayerData({
-                                      ...lecture,chapter : index + 1,lecture:i+1,videoId:lecture.lectureUrl.split('/').pop()
+                                      ...lecture,chapter : index + 1,lecture:i+1,videoId:getYoutubeVideoId(lecture.lectureUrl)
                                     })
                                   }}
                                   className=" px-3 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition-all
@@ -250,7 +339,7 @@ const Player = () => {
       </p>
     </div>
 
-    <Rating initialRating={0} />
+    <Rating initialRating={initialRating} onRate={handleRate} />
   </div>
 
 </div>
@@ -314,8 +403,9 @@ const Player = () => {
               : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 hover:bg-yellow-500/20"
           }
         `}
+        onClick={()=>markLectureAsCompleted(playerData.lectureId)}
       >
-        {false ? "Completed" : "Mark Complete"}
+        {progressData && progressData.lectureCompleted.includes(playerData.lectureId) ? "Completed" : "Mark Complete"}
       </button>
 
     </div>
@@ -448,7 +538,7 @@ const Player = () => {
       </div>
       <Footer/>
     </>
-  )
+  ):<Loading/>
 }
 
 export default Player

@@ -2,19 +2,35 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../Context/AppContext'
 import Loading from '../../Components/student/Loading'
 import { FaBookOpen } from 'react-icons/fa'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const MyCourses = () => {
-  const { allcourses } = useContext(AppContext)
+  const { backendUrl,isEducator,getToken } = useContext(AppContext)
 
   const [courses, setCourses] = useState(null)
 
   const fetchEducatorCourses = async () => {
-    setCourses(allcourses)
+    try {
+      const token = await getToken()
+      const {data} = await axios.get(backendUrl + '/api/educator/courses',
+        {headers:{Authorization:`Bearer ${token}`}}
+      )
+      if(data.success){
+        setCourses(data.courses)
+
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   useEffect(() => {
-    fetchEducatorCourses()
-  }, [allcourses])
+    if(isEducator){
+      fetchEducatorCourses()
+    }
+    
+  }, [isEducator])
 
   return courses ? (
     <div className="min-h-screen p-4 md:p-8">

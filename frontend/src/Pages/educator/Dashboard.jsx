@@ -8,18 +8,36 @@ import {
   FaBookOpen,
   FaIndianRupeeSign,
 } from 'react-icons/fa6'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 const Dashboard = () => {
-  const { currency } = useContext(AppContext)
+
+  const { currency ,backendUrl,isEducator,getToken} = useContext(AppContext)
   const [dashboardData, setDashboardData] = useState(null)
 
   const fetchDashboardData = async () => {
-    setDashboardData(dummyDashboardData)
+    try {
+      const token = await getToken();
+      const {data} = await axios.get(backendUrl + '/api/educator/dashborad',
+        {headers:{Authorization:`Bearer ${token}`}}
+      )
+      console.log("API Response:", data);
+      if(data.success){
+        setDashboardData(data.dashboardData)
+      }
+      else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   useEffect(() => {
+    if(isEducator)
     fetchDashboardData()
-  }, [])
+  }, [isEducator])
 
   return dashboardData ? (
     <div className="min-h-screen p-4 md:p-8">

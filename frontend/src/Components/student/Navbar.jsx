@@ -3,9 +3,11 @@ import { assets } from "../../assets/assets";
 import { Link, useLocation } from "react-router-dom";
 import { useClerk, UserButton, useUser } from "@clerk/react";
 import { AppContext } from "../../Context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
-  const {navigate,isEducator} = useContext(AppContext)
+  const {navigate,isEducator,backendUrl,setIsEducator,getToken} = useContext(AppContext)
   const location = useLocation();
   
   const isCourseListsPage =
@@ -14,6 +16,30 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
   const { user } = useUser();
 
+
+  const becomeEducator = async () => {
+    try {
+      if(isEducator){
+        navigate('/educator')
+        return;
+      }
+      const token = await getToken()
+
+      const { data } = await axios.get(backendUrl+'/api/educator/update-role',{headers:{Authorization:`Bearer ${token}`}})
+
+      if(data.success)
+      {
+        setIsEducator(true)
+        toast.success(data.message)
+
+      }
+      else{
+        toast.error("error becoming an educator")
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
   return (
    <nav
   className="
@@ -38,9 +64,9 @@ const Navbar = () => {
       <div className="hidden md:flex items-center gap-8">
         {user && (
           <div className="flex items-center gap-4 text-gray-300">
-            <button className="font-medium hover:text-green-400 transition duration-300 cursor-pointer" onClick={()=>{
-              navigate('/educator')
-            }}>
+            <button className="font-medium hover:text-green-400 transition duration-300 cursor-pointer" onClick={
+              becomeEducator
+            }>
               {!isEducator ? 'Become Educator':'Educator Dashboard'} 
             </button>
 
@@ -84,7 +110,7 @@ const Navbar = () => {
       <div className="md:hidden flex items-center gap-3 text-sm">
         {user && (
           <div className="flex items-center gap-2 text-gray-300">
-            <button className="hover:text-green-400 transition" onClick={()=>navigate('/educator ')}>
+            <button className="hover:text-green-400 transition" onClick={becomeEducator}>
                {!isEducator ? 'Become Educator':'Educator Dashboard'} 
             </button>
 

@@ -99,6 +99,11 @@ export const purchaseCourse = async (req, res) => {
 // Stripte Gateway 
 
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
+console.log("origin:", req.headers.origin);
+console.log("userId:", userId);
+console.log("courseId:", courseId);
+console.log("STRIPE_KEY exists:", !!process.env.STRIPE_SECRET_KEY);
+console.log("CURRENCY:", process.env.CURRENCY);
 const currency = process.env.CURRENCY.toLowerCase()
 console.log("currency",currency)
 

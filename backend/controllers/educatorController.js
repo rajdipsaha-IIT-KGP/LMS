@@ -132,8 +132,9 @@ export const educatorDashboardData = async(req,res)=>{
       })
     }
     res.status(200).json({
+      success:true,
       dashboardData:{
-        success:true,
+        
         totalEarnings,
         enrolledStudentsData,
         totalCourses
