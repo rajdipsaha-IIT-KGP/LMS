@@ -115,7 +115,7 @@ const line_items = [{
         product_data:{
             name:courseData.courseTitle
         },
-        unit_amount:Math.floor(newPurchase.amount)*100
+        unit_amount:Math.floor(newPurchase.amount)
     },
     quantity:1
 }]
