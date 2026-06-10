@@ -10,10 +10,12 @@ export const getAllCourses = async (req,res) => {
         }).select(['-courseContent','-enrolledStudents']).populate({path:'educator'})
 
         res.status(200).json({
+            success:true,
             courses
         })
     } catch (error) {
         res.status(500).json({
+            success:false,
             message:error.message
         })
     }
@@ -44,6 +46,7 @@ export const getCourseId = async (req,res) => {
 
     } catch (error) {
           res.status(500).json({
+            success:false,
             message:error.message
         })
     }

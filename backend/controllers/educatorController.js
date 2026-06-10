@@ -46,6 +46,7 @@ export const addCourse = async(req,res)=>{
 
       if(!imageFile){
         return res.status(400).json({
+          success:false,
           message:"Plz attach the course thumbnail"
         })
       }
@@ -71,6 +72,7 @@ export const addCourse = async(req,res)=>{
       console.log("ERROR:", err);
 
       return res.status(500).json({
+        success:false,
         message: err.message
       });
   }
@@ -85,6 +87,7 @@ export const getEducatorCourses = async(req,res)=>{
   const courses = await Course.find({educator})
 
   res.status(200).json({
+    success:true,
     courses
   })
 
@@ -130,6 +133,7 @@ export const educatorDashboardData = async(req,res)=>{
     }
     res.status(200).json({
       dashboardData:{
+        success:true,
         totalEarnings,
         enrolledStudentsData,
         totalCourses
@@ -138,6 +142,7 @@ export const educatorDashboardData = async(req,res)=>{
    }
    catch(err){
       res.status(500).json({
+        success:false,
         message:err.message
       })
    }
@@ -170,7 +175,7 @@ export const getEnrolledStudentsData = async (req,res) => {
 
 
     res.status(201).json({
-      success:'true',
+      success:true,
       enrolledStudents
     })
 
@@ -179,6 +184,7 @@ export const getEnrolledStudentsData = async (req,res) => {
 
   } catch (error) {
     res.status(500).json({
+      success:false,
       message: error.message
     })
   }

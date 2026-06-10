@@ -12,9 +12,11 @@ export const getUserData = async (req,res) => {
 
         if(!user)
             return res.status(404).json({ 
+          success:false,
                 message:"User no found"
             })
         res.status(200).json({
+          success:true,
            user
         })
     } catch (error) {
@@ -34,6 +36,7 @@ export const userEnrolledCourses = async (req,res) => {
         const userData = await User.findById(userId).populate('enrolledCourses')
 
         res.status(200).json({
+          success:true,
           enrolledCourses:userData.enrolledCourses
         })
 
@@ -75,6 +78,7 @@ export const purchaseCourse = async (req, res) => {
 
     if (alreadyPurchased) {
       return res.status(400).json({
+
         success: false,
         message: "Course already purchased",
       });
@@ -146,7 +150,7 @@ export const updateUserCourseProgress = async (req,res) => {
     })
 
     if(progressData){
-      if(progressData.lectureCompleted.includes(lectureId))
+      if (progressData.lectureCompleted.some(id => id.toString() === lectureId))
         return res.json({
            success:true,
            message:"Lecture already completed"
@@ -163,6 +167,7 @@ export const updateUserCourseProgress = async (req,res) => {
     }
 
     return res.status(200).json({
+      success:true,
       message:"Progress Udated"
     })
 
@@ -170,6 +175,7 @@ export const updateUserCourseProgress = async (req,res) => {
 
   } catch (error) {
     return res.status(500).json({
+      success:false,
       message:error.message
     })
   }
@@ -192,6 +198,7 @@ export const getUserCourseProgress = async (req,res) => {
     })
   } catch (error) {
      return res.status(500).json({
+      success:false,
       message:error.message
     })
   }
@@ -207,6 +214,7 @@ export const addUserRating = async (req,res) => {
 
     if(!userId || !courseId || !rating || rating < 1 || rating > 5)
       return res.status(400).json({
+    success:false,
         message:"Invalid Credentials"
       })
       const course = await Course.findById(courseId);
@@ -214,16 +222,18 @@ export const addUserRating = async (req,res) => {
 
       if(!course)
         return res.status(400).json({
+      success:false,
         message:"Course not found"
       })
 
       const user = await User.findById(userId)
        if(!user || !user.enrolledCourses.includes(courseId))
         return res.status(400).json({
+      success:false,
         message:"You can't rate the course"
       })
 
-      const existingRatingIndex = course.courseRatings.findIndex(r=>r.userId === userId)
+      const existingRatingIndex = course.courseRatings.findIndex(r=>r.userId.toString() === userId)
 
       if(existingRatingIndex > -1){
          course.courseRatings[existingRatingIndex].rating = rating
@@ -238,6 +248,7 @@ export const addUserRating = async (req,res) => {
       })
    } catch (error) {
     return res.status(500).json({
+      success:false,
       message:error.message
     })
    }
