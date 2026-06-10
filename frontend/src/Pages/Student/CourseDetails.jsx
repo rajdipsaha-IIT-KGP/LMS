@@ -24,10 +24,17 @@ const CourseDetails = () => {
   try {
     const parsedUrl = new URL(url);
 
+    // youtu.be/VIDEO_ID
     if (parsedUrl.hostname.includes("youtu.be")) {
       return parsedUrl.pathname.slice(1);
     }
 
+    // youtube.com/embed/VIDEO_ID
+    if (parsedUrl.pathname.includes("/embed/")) {
+      return parsedUrl.pathname.split("/embed/")[1];
+    }
+
+    // youtube.com/watch?v=VIDEO_ID
     return parsedUrl.searchParams.get("v");
   } catch {
     return null;
@@ -224,6 +231,8 @@ useEffect(() => {
                 key={i}
                 className="flex items-center justify-between px-6 py-4 hover:bg-zinc-800/30 cursor-pointer" onClick={()=>{
                   if(lecture.isPreviewFree){
+                    console.log("URL:", lecture.lectureUrl);
+console.log("Video ID:", getYoutubeVideoId(lecture.lectureUrl));
                     setPlayerData({
                       videoId:getYoutubeVideoId(lecture.lectureUrl)
                     })

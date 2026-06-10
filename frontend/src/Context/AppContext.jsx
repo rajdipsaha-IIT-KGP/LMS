@@ -118,6 +118,7 @@ const calculateNoOfLectures = (course) => {
 const fetchUserEnrolledCourses = async()=>{
   try {
     const token = await getToken()
+    console.log(token)
   const {data} = await axios.get(backendUrl+'/api/user/enrolled-courses',{
     headers:{Authorization:`Bearer ${token}`}
 
@@ -145,6 +146,7 @@ const fetchUserEnrolledCourses = async()=>{
      if(user){
     fetchUserData()
     fetchUserEnrolledCourses()
+
      }
       
   },[user])

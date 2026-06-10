@@ -54,11 +54,17 @@ const getYoutubeVideoId = (url) => {
   try {
     const parsedUrl = new URL(url);
 
+    // youtu.be/VIDEO_ID
     if (parsedUrl.hostname.includes("youtu.be")) {
       return parsedUrl.pathname.slice(1);
     }
-    
 
+    // youtube.com/embed/VIDEO_ID
+    if (parsedUrl.pathname.includes("/embed/")) {
+      return parsedUrl.pathname.split("/embed/")[1];
+    }
+
+    // youtube.com/watch?v=VIDEO_ID
     return parsedUrl.searchParams.get("v");
   } catch {
     return null;
@@ -238,6 +244,8 @@ getCourseProgress()
     getYoutubeVideoId(lecture.lectureUrl)
   );
                               if (lecture.lectureUrl) {
+                                console.log("URL:", lecture.lectureUrl);
+console.log("Video ID:", getYoutubeVideoId(lecture.lectureUrl));
                                 setPlayerData({
                                   ...lecture,chapter : index + 1,lecture:i+1,videoId:getYoutubeVideoId(lecture.lectureUrl)
                                 })
@@ -288,6 +296,8 @@ getCourseProgress()
   );
                                     console.log("Lecture clicked")
                                    console.log(lecture)
+                                   console.log("URL:", lecture.lectureUrl);
+console.log("Video ID:", getYoutubeVideoId(lecture.lectureUrl));
                                     setPlayerData({
                                       ...lecture,chapter : index + 1,lecture:i+1,videoId:getYoutubeVideoId(lecture.lectureUrl)
                                     })
